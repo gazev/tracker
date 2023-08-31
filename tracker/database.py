@@ -25,3 +25,19 @@ def get_db():
 
 def close_db():
     Database().close()
+
+def get_peers(info_hash, peers_nr):
+    # peers are stored as maps with IPs as keys and ports and event as values
+    with get_db() as db:
+        peers_map = db[info_hash]
+
+    peers_list = []
+    for k, v in peers_map.items():
+        peers_list += (k, *v)
+        if peers_nr == 0:
+            break
+        peers_nr -= 1
+
+    return peers_list 
+
+

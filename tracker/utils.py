@@ -9,6 +9,7 @@ HTTP_404_MESSAGE = b'File not found!'
 
 MISSING_INFO_HASH = 'Missing info hash'
 MISSING_PEER_ID   = 'Missing peer id'
+MISSING_PORT      = 'Missing port'
 MISSING_EVENT     = 'Missing event parameter'
 
 def query_to_map(query: str):
@@ -51,4 +52,8 @@ def get_value(map: dict, key: str, conv_func: callable = None, *args):
     
     return value
 
+
+def get_client_addr(environ: dict):
+    return environ['HTTP_X_FORWARDED_FOR'] if 'HTTP_X_FORWARDED_FOR' in environ \
+        else environ['REMOTE_ADDR']
 
