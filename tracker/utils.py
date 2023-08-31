@@ -1,10 +1,15 @@
-CONTENT_HEADER = ("Content-type", "text/plain")
+CONTENT_HEADER = ('Content-type', 'text/plain')
 
-HTTP_400_BAD_REQUEST = "400 Bad request"
-HTTP_404_NOT_FOUND   = "404 Not found"
+HTTP_200_OK          = '200 OK'
+HTTP_400_BAD_REQUEST = '400 Bad request'
+HTTP_404_NOT_FOUND   = '404 Not found'
 
-HTTP_400_MESSAGE = b"Bad request!"
-HTTP_404_MESSAGE = b"File not found!"
+HTTP_400_MESSAGE = b'Bad request!'
+HTTP_404_MESSAGE = b'File not found!'
+
+MISSING_INFO_HASH = 'Missing info hash'
+MISSING_PEER_ID   = 'Missing peer id'
+MISSING_EVENT     = 'Missing event parameter'
 
 def query_to_map(query: str):
     """ Returns a dictionary mapping all keys and values from a query string
@@ -18,7 +23,7 @@ def query_to_map(query: str):
     # and make the zero index item our key and the one index item our value 
     return {
         tup[0]:tup[1] \
-            for tup in (pair_str.split("=") for pair_str in query_pairs)
+            for tup in (pair_str.split('=') for pair_str in query_pairs)
     }
 
 
