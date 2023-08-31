@@ -10,8 +10,6 @@ import shelve
 import urllib.parse
 import bencode
 
-DB_PATH = './resource/things.db'
-
 def setup():
     dirname = os.path.dirname(DB_PATH)
     if not os.path.exists(dirname):
@@ -131,4 +129,3 @@ class Tracker:
 
 setup()
 tracker = Tracker()
-

@@ -1,7 +1,5 @@
 import shelve
-from utils import *
-
-DB_PATH = "./resource/thing.db"
+from utils import DB_PATH 
 
 class Database:
     __shared_state = {}

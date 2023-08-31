@@ -1,4 +1,7 @@
+import os
+
 MAX_PEERS = 30 # save some bandwith
+DB_PATH   = os.getenv("DB_PATH")
 
 CONTENT_HEADER = ('Content-type', 'text/plain')
 
