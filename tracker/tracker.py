@@ -60,9 +60,13 @@ class Tracker:
             return [HTTP_404_MESSAGE]
 
         ip = get_client_addr(environ)
-        self.add_peer_to_db(info_hash, ip, port, event)
 
-        return self.build_response(info_hash, numwant, 10)
+        if event == 'stopped':
+            self.remove_peer_from_db(info_hash, ip)
+        else:
+            self.add_peer_to_db(info_hash, ip, port, event)
+
+        return self.build_response(info_hash, numwant, 10, ip)
     
     def has_torrent(self, info_hash: str) -> bool:
         with database.get_db() as db:
@@ -72,6 +76,11 @@ class Tracker:
         with database.get_db() as db:
             db[info_hash][ip] = (port, event)
 
+    def remove_peer_from_db(self, info_hash, ip):
+        with database.get_db() as db:
+            if ip not in db[info_hash]:
+                return
+            del db[info_hash][ip]
     
     def build_fail_response(self, fail_reason: str):
         return [bencode.dumps({"failure reason": fail_reason})]    
@@ -81,6 +90,7 @@ class Tracker:
         info_hash: str, 
         numwant:   int, 
         interval:  int,
+        client_ip: str,
         *,
         warn:      str = "",
     ):
@@ -91,6 +101,10 @@ class Tracker:
         complete   = 0
         incomplete = 0
         for ip, port, event in peers_list:
+            # TODO
+            # don't send a client its own ip (this can be done more efficiently)
+            if ip == client_ip:
+                continue
             peers_compact_str += socket.inet_aton(ip) 
             peers_compact_str += port.to_bytes(2, byteorder="big")
             
