@@ -48,6 +48,9 @@ class Tracker:
         if not port:
             start_response(HTTP_200_OK, [CONTENT_HEADER])
             return self.build_fail_response(fail_reason=MISSING_PORT)
+        if not compact:
+            start_response(HTTP_200_OK, [CONTENT_HEADER])
+            return self.build_fail_response(fail_reason=INVALID_COMPACT)
         if not event:
             start_response(HTTP_200_OK, [CONTENT_HEADER])
             return self.build_fail_response(fail_reason=MISSING_EVENT)

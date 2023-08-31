@@ -12,6 +12,7 @@ HTTP_404_MESSAGE = b'File not found!'
 MISSING_INFO_HASH = 'Missing info hash'
 MISSING_PEER_ID   = 'Missing peer id'
 MISSING_PORT      = 'Missing port'
+INVALID_COMPACT   = 'Tracker only supports compact responses'
 MISSING_EVENT     = 'Missing event parameter'
 INVALID_NUMWANT   = 'Invalid numwant parameter, missing or exceeds max peers'
 
