@@ -33,11 +33,10 @@ def get_peers(info_hash, peers_nr):
 
     peers_list = []
     for k, v in peers_map.items():
-        peers_list += (k, *v)
+        peers_list.append((k, *v))
         if peers_nr == 0:
             break
         peers_nr -= 1
 
     return peers_list 
-
 

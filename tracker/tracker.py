@@ -1,4 +1,7 @@
 from webob import Request
+from utils import *
+
+import socket
 
 import os
 import database
@@ -9,7 +12,7 @@ import bencode
 
 DB_PATH = './resource/things.db'
 
-def create_dirs():
+def setup():
     dirname = os.path.dirname(DB_PATH)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -48,22 +51,27 @@ class Tracker:
         if not event:
             start_response(HTTP_200_OK, [CONTENT_HEADER])
             return self.build_fail_response(fail_reason=MISSING_EVENT)
+        if not numwant or numwant > MAX_PEERS:
+            start_response(HTTP_200_OK, [CONTENT_HEADER])
+            return self.build_fail_response(fail_reason=INVALID_NUMWANT)
 
         if not self.has_torrent(info_hash):
             start_response(HTTP_404_NOT_FOUND, [CONTENT_HEADER])
             return [HTTP_404_MESSAGE]
 
         ip = get_client_addr(environ)
+        self.add_peer_to_db(info_hash, ip, port, event)
 
-        # add this peer to the db    
-        with database.get_db() as db:
-            db[info_hash][ip] = (port, event)
-
-        return [b'Good\n']
+        return self.build_response(info_hash, numwant, 10)
     
     def has_torrent(self, info_hash: str) -> bool:
         with database.get_db() as db:
             return info_hash in db
+    
+    def add_peer_to_db(self, info_hash, ip, port, event):
+        with database.get_db() as db:
+            db[info_hash][ip] = (port, event)
+
     
     def build_fail_response(self, fail_reason: str):
         return [bencode.dumps({"failure reason": fail_reason})]    
@@ -77,13 +85,25 @@ class Tracker:
         warn:      str = "",
     ):
 
-        peers_list = get_peers(info_hash, numwant)    
+        peers_list = database.get_peers(info_hash, numwant)    
+
+        peers_compact_str = b""
+        complete   = 0
+        incomplete = 0
+        for ip, port, event in peers_list:
+            peers_compact_str += socket.inet_aton(ip) 
+            peers_compact_str += port.to_bytes(2, byteorder="big")
+            
+            if event == "completed":
+                complete += 1
+            else:
+                incomplete += 1
 
         response = {
             "interval":   interval,
-            "complete":   get_nr_of_complete_peers(),
-            "incomplete": get_nr_of_incomplete_peers(),
-            "peers":      [pass]
+            "complete":   complete,
+            "incomplete": incomplete,
+            "peers":      peers_compact_str 
         }
 
         if warn:
@@ -92,6 +112,6 @@ class Tracker:
         return [bencode.dumps(response)]
 
 
-create_dirs()
+setup()
 tracker = Tracker()
 

@@ -1,3 +1,5 @@
+MAX_PEERS = 30 # save some bandwith
+
 CONTENT_HEADER = ('Content-type', 'text/plain')
 
 HTTP_200_OK          = '200 OK'
@@ -11,6 +13,7 @@ MISSING_INFO_HASH = 'Missing info hash'
 MISSING_PEER_ID   = 'Missing peer id'
 MISSING_PORT      = 'Missing port'
 MISSING_EVENT     = 'Missing event parameter'
+INVALID_NUMWANT   = 'Invalid numwant parameter, missing or exceeds max peers'
 
 def query_to_map(query: str):
     """ Returns a dictionary mapping all keys and values from a query string
