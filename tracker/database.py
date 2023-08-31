@@ -9,7 +9,7 @@ class Database:
     
     def get(self):
         if not hasattr(self, '__db'):
-            self.__db = shelve.open(DB_PATH, writeback=True)
+            self.__db = shelve.open(DB_PATH + "/tracker.db", writeback=True)
         return self.__db
     
     def close(self):
