@@ -27,7 +27,6 @@ class Tracker:
 
 
         if req.path_info != '/announce:6969':
-            print(req.path_info, flush=True)
             start_response(HTTP_404_NOT_FOUND, [CONTENT_HEADER])
             return [HTTP_404_MESSAGE]
 
@@ -75,11 +74,6 @@ class Tracker:
     
     def has_torrent(self, info_hash: str) -> bool:
         with database.get_db() as db:
-            print(info_hash, flush=True)
-
-            for k in db:
-                print(k, flush=True)
-
             return info_hash in db
     
     def add_peer_to_db(self, info_hash, ip, port, event):
