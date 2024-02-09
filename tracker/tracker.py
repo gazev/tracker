@@ -18,20 +18,23 @@ def setup():
 
 class Tracker:
     def __call__(self, environ, start_response):
+        print("Running", flush=True)
         req = Request(environ)
 
         if req.method != 'GET':
             start_response(HTTP_400_BAD_REQUEST, [CONTENT_HEADER])
             return [HTTP_400_MESSAGE]
 
-        if req.path_info != '/announce':
+
+        if req.path_info != '/announce:6969':
+            print(req.path_info, flush=True)
             start_response(HTTP_404_NOT_FOUND, [CONTENT_HEADER])
             return [HTTP_404_MESSAGE]
 
         params = query_to_map(environ['QUERY_STRING'])
 
         info_hash  = get_value(params, 'info_hash',  lambda x: urllib.parse.unquote_to_bytes(x).hex())
-        peer_id    = get_value(params, 'client_id',  None)
+        peer_id    = get_value(params, 'peer_id',  None)
         port       = get_value(params, 'port',       int)
         compact    = get_value(params, 'compact',    int)
         event      = get_value(params, 'event',      None)
@@ -67,10 +70,16 @@ class Tracker:
         else:
             self.add_peer_to_db(info_hash, ip, port, event)
 
+        start_response(HTTP_200_OK, [CONTENT_HEADER])
         return self.build_response(info_hash, numwant, 10, ip)
     
     def has_torrent(self, info_hash: str) -> bool:
         with database.get_db() as db:
+            print(info_hash, flush=True)
+
+            for k in db:
+                print(k, flush=True)
+
             return info_hash in db
     
     def add_peer_to_db(self, info_hash, ip, port, event):
